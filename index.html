@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listado Pokémon</title>
+    <link rel="stylesheet" href="css/index.css" />
+    <script defer src="js/index.js"></script>
+    <script defer src="js/theme.js"></script>
+  </head>
+  <body class="app">
+    <header class="header">
+      <div class="header__container">
+        <h1 class="header__title">
+          <img src="assets/images/pokemon-23.svg" alt="logo" />
+        </h1>
+        <div class="header__toggle-container">
+          <label class="switch">
+            <input type="checkbox" id="themeToggleCheckbox" />
+            <span class="slider"></span>
+          </label>
+          <span>Dark Mode</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section id="loadingState" class="status-message" aria-label="Loading">
+        <div class="spinner"></div>
+        <p>Cargando Pokémon...</p>
+      </section>
+
+      <section
+        id="errorState"
+        class="status-message status-message--error hidden"
+        aria-label="Error"
+      >
+        <p>Error al cargar los datos. Intenta de nuevo.</p>
+        <button id="retryBtn" class="btn btn--primary">Reintentar</button>
+      </section>
+
+      <section
+        id="emptyState"
+        class="status-message status-message--empty hidden"
+        aria-label="Empty"
+      >
+        <p>No hay Pokémon disponibles.</p>
+      </section>
+
+      <section
+        id="pokemonGrid"
+        class="pokemon-grid hidden"
+        aria-label="Listado de Pokémon"
+      ></section>
+
+      <section class="pagination hidden" id="paginationControls">
+        <button id="prevBtn" class="btn btn--secondary">Anterior</button>
+        <span id="pageIndicator" class="page-indicator">1</span>
+        <button id="nextBtn" class="btn btn--secondary">Siguiente</button>
+      </section>
+    </main>
+
+    <template id="pokemonCardTemplate">
+      <article class="pokemon-card">
+        <button class="pokemon-card__button" data-pokemon-id="">
+          <div class="pokemon-card__image-container">
+            <img class="pokemon-card__image" src="" alt="" loading="lazy" />
+          </div>
+          <div class="pokemon-card__content">
+            <h2 class="pokemon-card__id">#<span class="id-value">000</span></h2>
+            <p class="pokemon-card__name"></p>
+            <div class="pokemon-card__types"></div>
+          </div>
+        </button>
+      </article>
+    </template>
+  </body>
+</html>
