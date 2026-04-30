@@ -1,0 +1,144 @@
+.detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+  align-items: flex-start;
+  padding-bottom: 2rem;
+}
+
+.detail__back-btn {
+  margin-bottom: 1rem;
+  padding: 0.62rem 1rem;
+}
+
+.detail__container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.25rem, 4vw, 2.5rem);
+  align-items: flex-start;
+}
+
+.detail__image-section {
+  flex: 0.9 1 260px;
+  width: 100%;
+}
+
+.detail__image-container {
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.13),
+    rgba(255, 255, 255, 0.07)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.detail__image {
+  width: 100%;
+  max-width: 18rem;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.2));
+}
+
+.detail__info-section {
+  flex: 1 1 320px;
+}
+
+.detail__title {
+  font-size: clamp(1.4rem, 3.4vw, 2.2rem);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+.detail__id {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.1em;
+}
+
+.detail__types {
+  margin-bottom: 1.25rem;
+}
+
+.detail__types strong {
+  display: block;
+  margin-bottom: 0.8rem;
+  color: var(--text);
+}
+
+.detail__types-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail__types-list span {
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.detail__stats {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 1rem;
+  column-gap: 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.detail__col {
+  flex: 1 1 170px;
+}
+
+.detail__text {
+  margin: 0 0 0.5rem;
+  font-size: 0.96rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.detail__label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.detail__abilities {
+  margin-top: 1.25rem;
+}
+
+.detail__abilities strong {
+  display: block;
+  margin-bottom: 0.8rem;
+  color: var(--text);
+}
+
+.detail__abilities-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail__abilities-list li {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}

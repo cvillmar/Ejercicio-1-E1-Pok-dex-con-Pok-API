@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalle Pokémon</title>
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/detail.css" />
+
+    <script defer src="js/theme.js"></script>
+    <script defer src="js/detail.js"></script>
+  </head>
+  <body class="app">
+    <header class="header">
+      <div class="header__container">
+        <img src="assets/images/pokemon-logo.png" alt="logo" />
+        <div class="header__toggle-container">
+          <label class="switch">
+            <input type="checkbox" id="themeToggleCheckbox" />
+            <span class="slider"></span>
+          </label>
+          <span>Dark Mode</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section id="loadingState" class="status-message" aria-label="Loading">
+        <div class="spinner"></div>
+        <p>Cargando detalles...</p>
+      </section>
+
+      <section
+        id="errorState"
+        class="status-message status-message--error hidden"
+        aria-label="Error"
+      >
+        <p>Error al cargar los detalles. Intenta de nuevo.</p>
+        <button id="retryBtn" class="btn btn--primary">Reintentar</button>
+      </section>
+
+      <article id="pokemonDetail" class="detail hidden">
+        <button id="backBtn" class="detail__back-btn btn btn--secondary">
+          ← Volver
+        </button>
+
+        <div class="detail__container">
+          <div class="detail__image-section">
+            <div class="detail__image-container">
+              <img
+                id="detailImage"
+                class="detail__image"
+                src=""
+                alt="Imagen del Pokémon"
+              />
+            </div>
+          </div>
+
+          <div class="detail__info-section">
+            <h1 id="detailName" class="detail__title"></h1>
+            <p id="detailId" class="detail__id"></p>
+
+            <div class="detail__types">
+              <strong>Tipos:</strong>
+              <div id="detailTypes" class="detail__types-list"></div>
+            </div>
+
+            <div class="detail__stats">
+              <div class="detail__col">
+                <p class="detail__text">
+                  <strong class="detail__label">Altura:</strong>
+                  <span id="detailHeight"></span>
+                </p>
+                <p class="detail__text">
+                  <strong class="detail__label">Peso:</strong>
+                  <span id="detailWeight"></span>
+                </p>
+                <p class="detail__text">
+                  <strong class="detail__label">Experiencia Base:</strong>
+                  <span id="detailBaseExperience"></span>
+                </p>
+              </div>
+
+              <div class="detail__col">
+                <p class="detail__text">
+                  <strong class="detail__label">HP:</strong>
+                  <span id="detailHp"></span>
+                </p>
+                <p class="detail__text">
+                  <strong class="detail__label">Ataque:</strong>
+                  <span id="detailAttack"></span>
+                </p>
+                <p class="detail__text">
+                  <strong class="detail__label">Defensa:</strong>
+                  <span id="detailDefense"></span>
+                </p>
+              </div>
+
+              <div class="detail__col">
+                <p class="detail__text">
+                  <strong class="detail__label">Ataque Esp.:</strong>
+                  <span id="detailSpAtk"></span>
+                </p>
+                <p class="detail__text">
+                  <strong class="detail__label">Defensa Esp.:</strong>
+                  <span id="detailSpDef"></span>
+                </p>
+                <p class="detail__text">
+                  <strong class="detail__label">Velocidad:</strong>
+                  <span id="detailSpeed"></span>
+                </p>
+              </div>
+            </div>
+
+            <div class="detail__abilities">
+              <strong>Habilidades:</strong>
+              <ul id="detailAbilities" class="detail__abilities-list"></ul>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+  </body>
+</html>

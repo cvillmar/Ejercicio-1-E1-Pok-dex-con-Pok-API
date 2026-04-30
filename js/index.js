@@ -1,6 +1,6 @@
 const API_URL = "https://pokeapi.co/api/v2/pokemon";
-const LIMIT = 18;
-const MIN_PAGES = 3;
+const LIMIT = 20;
+const MAX_DEMO_PAGES = 3;
 const REQUEST_TIMEOUT = 8000;
 const RETRIES = 2;
 
@@ -16,40 +16,32 @@ const pageIndicator = document.getElementById("pageIndicator");
 const retryBtn = document.getElementById("retryBtn");
 const paginationControls = document.getElementById("paginationControls");
 
+const pagesCache = new Map();
+
 let currentPage = 0;
-let totalPages = MIN_PAGES;
+let totalPages = MAX_DEMO_PAGES;
 let isLoading = false;
 
-function showLoading() {
-  loadingState.classList.remove("hidden");
-  errorState.classList.add("hidden");
-  emptyState.classList.add("hidden");
-  pokemonGrid.classList.add("hidden");
-}
+function showState(state, errorMessage) {
+  const states = {
+    loading: loadingState,
+    error: errorState,
+    empty: emptyState,
+    grid: pokemonGrid,
+  };
 
-function showError(message = "Error al cargar los datos. Intenta de nuevo.") {
-  loadingState.classList.add("hidden");
-  emptyState.classList.add("hidden");
-  pokemonGrid.classList.add("hidden");
-  errorState.classList.remove("hidden");
-  errorState.querySelector("p").textContent = message;
-  paginationControls.classList.remove("hidden");
-}
+  Object.values(states).forEach((el) => el.classList.add("hidden"));
+  paginationControls.classList.add("hidden");
 
-function showEmpty() {
-  loadingState.classList.add("hidden");
-  errorState.classList.add("hidden");
-  pokemonGrid.classList.add("hidden");
-  emptyState.classList.remove("hidden");
-  paginationControls.classList.remove("hidden");
-}
+  if (state === "error" && errorMessage) {
+    errorState.querySelector("p").textContent = errorMessage;
+  }
 
-function showGrid() {
-  loadingState.classList.add("hidden");
-  errorState.classList.add("hidden");
-  emptyState.classList.add("hidden");
-  pokemonGrid.classList.remove("hidden");
-  paginationControls.classList.remove("hidden");
+  if (state === "grid" || state === "error" || state === "empty") {
+    paginationControls.classList.remove("hidden");
+  }
+
+  states[state]?.classList.remove("hidden");
 }
 
 function setPaginationState() {
@@ -77,15 +69,11 @@ async function fetchWithRetry(
   timeout = REQUEST_TIMEOUT,
 ) {
   for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), timeout);
+
     try {
-      const controller = new AbortController();
-      const timeoutId = window.setTimeout(() => controller.abort(), timeout);
-
-      const response = await fetch(url, {
-        signal: controller.signal,
-      });
-
-      window.clearTimeout(timeoutId);
+      const response = await fetch(url, { signal: controller.signal });
 
       if (!response.ok) {
         throw new Error(
@@ -98,6 +86,12 @@ async function fetchWithRetry(
       if (attempt === retries) {
         throw error;
       }
+
+      await new Promise((resolve) => {
+        window.setTimeout(resolve, 250 * (attempt + 1));
+      });
+    } finally {
+      window.clearTimeout(timeoutId);
     }
   }
 
@@ -106,6 +100,7 @@ async function fetchWithRetry(
 
 function renderPokemonList(pokemonList) {
   pokemonGrid.innerHTML = "";
+  const fragment = document.createDocumentFragment();
 
   pokemonList.forEach((pokemon) => {
     const id = extractPokemonId(pokemon.url);
@@ -117,51 +112,72 @@ function renderPokemonList(pokemonList) {
     const name = clone.querySelector(".pokemon-card__name");
 
     button.dataset.pokemonId = id;
-    button.addEventListener("click", () => {
-      window.location.href = `detail.html?id=${id}`;
-    });
-
     image.src = getPokemonImageUrl(id);
     image.alt = pokemon.name;
     idValue.textContent = formatPokemonId(id);
     name.textContent = pokemon.name;
 
-    pokemonGrid.appendChild(clone);
+    fragment.appendChild(clone);
   });
+
+  pokemonGrid.appendChild(fragment);
+}
+
+function handleLoadedPage(pokemonList, totalCount, page) {
+  currentPage = page;
+
+  const apiTotalPages = Math.ceil((totalCount ?? LIMIT) / LIMIT);
+  totalPages = Math.min(apiTotalPages, MAX_DEMO_PAGES);
+
+  if (pokemonList.length === 0) {
+    showState("empty");
+  } else {
+    renderPokemonList(pokemonList);
+    showState("grid");
+  }
+
+  isLoading = false;
+  setPaginationState();
 }
 
 async function loadPokemonPage(page = 0) {
   isLoading = true;
   setPaginationState();
-  showLoading();
+  showState("loading");
 
   try {
+    if (pagesCache.has(page)) {
+      const cached = pagesCache.get(page);
+      handleLoadedPage(cached.results, cached.count, page);
+      return;
+    }
+
     const offset = page * LIMIT;
     const url = `${API_URL}?limit=${LIMIT}&offset=${offset}`;
     const data = await fetchWithRetry(url);
 
     const pokemonList = data.results ?? [];
-    const apiTotalPages = 3;
+    const totalCount = data.count ?? LIMIT * MAX_DEMO_PAGES;
 
-    currentPage = page;
-    totalPages = Math.max(MIN_PAGES, apiTotalPages);
-
-    if (pokemonList.length === 0) {
-      showEmpty();
-    } else {
-      renderPokemonList(pokemonList);
-      showGrid();
-    }
-
-    isLoading = false;
-    setPaginationState();
+    pagesCache.set(page, { results: pokemonList, count: totalCount });
+    handleLoadedPage(pokemonList, totalCount, page);
   } catch (error) {
     console.error(error);
     isLoading = false;
     setPaginationState();
-    showError("Error al cargar los Pokémon. Intenta de nuevo.");
+    showState("error", "Error al cargar los Pokémon. Intenta de nuevo.");
   }
 }
+
+pokemonGrid.addEventListener("click", (event) => {
+  const button = event.target.closest(".pokemon-card__button");
+  if (!button) return;
+
+  const { pokemonId } = button.dataset;
+  if (!pokemonId) return;
+
+  window.location.href = `detail.html?id=${pokemonId}`;
+});
 
 prevBtn.addEventListener("click", () => {
   if (currentPage > 0 && !isLoading) {

@@ -87,22 +87,17 @@ body.app {
     linear-gradient(180deg, var(--bg-2) 0%, #0b1833 100%);
 }
 
-img {
-  display: block;
-  max-width: 100%;
-}
-
-button,
-input {
-  font: inherit;
-}
-
 .hidden {
   display: none !important;
 }
 
 .header {
-  padding: 24px 20px 8px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.header__container img {
+  width: 150px;
 }
 
 .header__container,
@@ -381,9 +376,9 @@ input {
 }
 
 .pagination {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   padding: 18px 22px;
   border: 1px solid var(--border);
@@ -395,4 +390,5 @@ input {
   font-weight: 700;
   letter-spacing: 0.06em;
   color: var(--text-muted);
+  justify-self: center;
 }
