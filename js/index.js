@@ -1,6 +1,7 @@
 const API_URL = "https://pokeapi.co/api/v2/pokemon";
 const LIMIT = 20;
-const MAX_DEMO_PAGES = 3;
+const MAX_POKEMON = 151;
+const TOTAL_PAGES = Math.ceil(MAX_POKEMON / LIMIT);
 const REQUEST_TIMEOUT = 8000;
 const RETRIES = 2;
 
@@ -19,7 +20,7 @@ const paginationControls = document.getElementById("paginationControls");
 const pagesCache = new Map();
 
 let currentPage = 0;
-let totalPages = MAX_DEMO_PAGES;
+let totalPages = TOTAL_PAGES;
 let isLoading = false;
 
 function showState(state, errorMessage) {
@@ -123,11 +124,9 @@ function renderPokemonList(pokemonList) {
   pokemonGrid.appendChild(fragment);
 }
 
-function handleLoadedPage(pokemonList, totalCount, page) {
+function handleLoadedPage(pokemonList, page) {
   currentPage = page;
-
-  const apiTotalPages = Math.ceil((totalCount ?? LIMIT) / LIMIT);
-  totalPages = Math.min(apiTotalPages, MAX_DEMO_PAGES);
+  totalPages = TOTAL_PAGES;
 
   if (pokemonList.length === 0) {
     showState("empty");
@@ -148,19 +147,30 @@ async function loadPokemonPage(page = 0) {
   try {
     if (pagesCache.has(page)) {
       const cached = pagesCache.get(page);
-      handleLoadedPage(cached.results, cached.count, page);
+      handleLoadedPage(cached.results, page);
       return;
     }
 
     const offset = page * LIMIT;
-    const url = `${API_URL}?limit=${LIMIT}&offset=${offset}`;
+    const remaining = MAX_POKEMON - offset;
+
+    if (remaining <= 0) {
+      handleLoadedPage([], page);
+      return;
+    }
+
+    const limitForPage = Math.min(LIMIT, remaining);
+    const url = `${API_URL}?limit=${limitForPage}&offset=${offset}`;
     const data = await fetchWithRetry(url);
 
     const pokemonList = data.results ?? [];
-    const totalCount = data.count ?? LIMIT * MAX_DEMO_PAGES;
+    const boundedPokemonList = pokemonList.filter((pokemon) => {
+      const id = Number(extractPokemonId(pokemon.url));
+      return Number.isFinite(id) && id <= MAX_POKEMON;
+    });
 
-    pagesCache.set(page, { results: pokemonList, count: totalCount });
-    handleLoadedPage(pokemonList, totalCount, page);
+    pagesCache.set(page, { results: boundedPokemonList });
+    handleLoadedPage(boundedPokemonList, page);
   } catch (error) {
     console.error(error);
     isLoading = false;
